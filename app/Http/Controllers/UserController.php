@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Company;
 use App\Models\UserProfile; 
 use App\Models\UserInterest;
 use App\Models\Sector;
@@ -53,7 +54,8 @@ class UserController extends Controller
             $user->load('profile', 'interests');
             $roles= role ::all();
             $sectors = Sector::all();
-            return view('users.edit', compact('user','roles', 'sectors'));
+            $companies = Company::all();
+            return view('users.edit', compact('user','roles', 'sectors', 'companies'));
     }
     public function update(Request $request, User $user)
     {
@@ -64,6 +66,7 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'exclude_if:password,null|min:8',
             'sector_id' => 'nullable|exists:sectors,id',
+            'company_id' => 'nullable|exists:companies,id',
         ]);
 
         $user->update($input);

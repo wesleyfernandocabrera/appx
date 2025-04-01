@@ -65,7 +65,20 @@
                 @enderror
             </div>
             
-            
+            <div class="mb-3">
+                <label for="company_id" class="form-label">Empresa</label>
+                <select name="company_id" class="form-control @error('company_id') is-invalid @enderror">
+                    <option value="">Selecione uma Empresa</option>
+                    @foreach ($companies as $company)
+                        <option value="{{ $company->id }}" {{ old('company_id', $user->company_id) == $company->id ? 'selected' : '' }}>
+                            {{ $company->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('company_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
             
             
 

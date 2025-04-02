@@ -55,7 +55,7 @@ class UserController extends Controller
             $roles= role ::all();
             $sectors = Sector::all();
             $companies = Company::all();
-            return view('users.edit', compact('user','roles', 'sectors', 'companies'));
+            return view('users.edit', compact('user','roles', 'sectors', 'companies','macros'));
     }
     public function update(Request $request, User $user)
     {

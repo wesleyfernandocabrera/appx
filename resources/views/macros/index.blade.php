@@ -42,7 +42,7 @@
     <tr>
       <th scope="row">{{ $macro->id }}</th>
       <td>{{ $macro->name }}</td>
-      <td>{{ $macro->description }}</td>
+      <td>{{ $macro->description ?? 'Sem descrição' }}</td>
       <td class="text-end">
         @can('edit', App\Models\User::class)
         <a href="{{ route('macros.edit', $macro->id) }}" class="btn btn-primary btn-sm">Editar</a>
@@ -50,7 +50,7 @@
         <form action="{{ route('macros.destroy', $macro->id) }}" method="POST" style="display: inline;">
           @csrf
           @method('DELETE')
-          @can('delete', App\Models\User::class)
+          @can('edit', App\Models\User::class)
           <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
           @endcan
         </form>

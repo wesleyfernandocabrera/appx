@@ -37,27 +37,27 @@ class MacroController extends Controller
         return redirect()->route('macros.index')->with('status', 'Macro criada com sucesso!');
     }
 
-    public function edit(Macro $Macro)
-    {
-        return view('macros.edit', compact('Macro'));
-    }
+    public function edit(Macro $macro)
+{
+    return view('macros.edit', compact('macro'));
+}
 
-    public function update(Request $request, Macro $Macro)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+public function update(Request $request, Macro $macro)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+    ]);
 
-        $Macro->update($request->all());
+    $macro->update($request->all());
 
-        return redirect()->route('macros.index')->with('status', 'Macro atualizada com sucesso!');
-    }
+    return redirect()->route('macros.index')->with('status', 'Macro atualizada com sucesso!');
+}
 
-    public function destroy(Macro $Macro)
-    {
-        $Macro->delete();
+public function destroy(Macro $macro)
+{
+    $macro->delete();
 
-        return redirect()->route('macros.index')->with('status', 'Macro deletada com sucesso!');
-    }
+    return redirect()->route('macros.index')->with('status', 'Macro deletada com sucesso!');
+}
 }

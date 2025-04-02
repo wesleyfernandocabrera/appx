@@ -30,6 +30,7 @@ use App\Http\Controllers\MacroController;
     Route::resource('companies', CompanyController::class);
 
     Route::resource('macros', MacroController::class);
+    
 
 
 });

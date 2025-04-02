@@ -36,7 +36,7 @@
       <th scope="col">Nome</th>
       <th scope="col">Email</th>
       <th scope="col">Setor</th> <!-- Nova Coluna -->
-      <th scope="col" class="text-end">Ação</th>
+      <th scope="col" class="text-end">Ações</th>
     </tr>
   </thead>
   <tbody>

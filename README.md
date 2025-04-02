@@ -1,10 +1,10 @@
 ### Passo a passo
 Clone Repositório
 ```sh
-git clone -b app-saas https://github.com/wesleyfernandocabrera/app-saas.git app-saas
+git clone -b https://github.com/wesleyfernandocabrera/appx.git 
 ```
 ```sh
-cd app-saas
+cd appx
 ```
 
 Suba os containers do projeto
@@ -46,3 +46,26 @@ php artisan migrate
 
 Acesse o projeto
 [http://localhost:8000](http://localhost:8000)
+
+
+
+#criar usuario via portal register
+
+#rodar os insert para cria as permissão
+INSERT INTO roles (id, name, created_at, updated_at)  
+VALUES (1, 'admin', NOW(), NOW());
+
+
+INSERT INTO roles (id, name, created_at, updated_at)  
+VALUES (2, 'view', NOW(), NOW());
+
+INSERT INTO roles (id, name, created_at, updated_at)  
+VALUES (3, 'editor', NOW(), NOW());
+
+
+
+#rodar os insert para setar a permissão
+
+INSERT INTO role_user
+(user_id, role_id)
+VALUES(1, 1);

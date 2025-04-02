@@ -66,5 +66,10 @@ class User extends Authenticatable
     {
     return $this->belongsTo(Company::class);
     }
+    public function macros()
+    {   
+    return $this->hasMany(Macro::class);
+    }
+
 
 }

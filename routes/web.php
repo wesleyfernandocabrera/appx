@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\MacroController;
 
     Route::middleware(['auth'])->group(function(){
     Route::get('/', function () {
@@ -27,6 +28,8 @@ use App\Http\Controllers\CompanyController;
     Route::resource('sectors', SectorController::class);
 
     Route::resource('companies', CompanyController::class);
+
+    Route::resource('macros', MacroController::class);
 
 
 });

@@ -4,7 +4,7 @@
 
 @section('page-actions')
 @can('create', App\Models\User::class)
-<a href="{{ route('macros.create') }}" class="btn btn-primary">Adicionar Macro</a>
+<a href="{{ route('macros.create') }}" class="btn btn-primary">Adicionar</a>
 @endcan
 @endsection
 

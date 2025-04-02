@@ -4,7 +4,7 @@
 
 @section('page-actions')
 @can('create', App\Models\User::class)
-<a href="{{ route('sectors.create') }}" class="btn btn-primary">Adicionar Setor</a>
+<a href="{{ route('sectors.create') }}" class="btn btn-primary">Adicionar</a>
 @endcan
 @endsection
 

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\MacroController;
+use App\Http\Controllers\DashboardController;
 
     Route::middleware(['auth'])->group(function(){
     Route::get('/', function () {
@@ -31,6 +32,7 @@ use App\Http\Controllers\MacroController;
 
     Route::resource('macros', MacroController::class);
     
-
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
+    
 
 });

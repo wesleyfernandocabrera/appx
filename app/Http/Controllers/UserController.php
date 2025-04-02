@@ -138,5 +138,10 @@ class UserController extends Controller
                 $user->delete();
                 return redirect()->route('users.index')->with('status', 'Usuario removido com sucesso.');
     }
+    public function dashboard()
+{
+    $totalUsers = User::count();
+    return view('admin.dashboard', compact('totalUsers'));
+}
 
 }

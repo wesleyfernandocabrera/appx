@@ -65,8 +65,8 @@ $breadcrumbs = [
               <div class="col-lg-3 col-6">
                 <div class="small-box text-bg-warning">
                   <div class="inner">
-                    <h3>44</h3>
-                    <p>User Registrations</p>
+                    <h3>{{ $totalUsers ?? 0 }}</h3>
+                    <p>User Registrations</p>                
                   </div>
                   <svg
                     class="small-box-icon"

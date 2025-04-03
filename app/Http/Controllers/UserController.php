@@ -10,6 +10,8 @@ use App\Models\UserInterest;
 use App\Models\Sector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -24,7 +26,7 @@ class UserController extends Controller
             });
         });
 
-        $users = $users->paginate();
+        $users = $users->paginate(10);
 
         return view('users.index', compact('users'));
     }
@@ -38,7 +40,7 @@ class UserController extends Controller
     {
         $input = $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
         ]);
 
@@ -142,6 +144,36 @@ class UserController extends Controller
 {
     $totalUsers = User::count();
     return view('admin.dashboard', compact('totalUsers'));
+}
+public function export()
+{
+    $response = new StreamedResponse(function () {
+        $handle = fopen('php://output', 'w');
+        fputcsv($handle, ['ID', 'Nome', 'Email', 'Setor']); // Cabeçalho
+
+        User::all()->each(function ($user) use ($handle) {
+            fputcsv($handle, [
+                $user->id,
+                $user->name,
+                $user->email,
+                $user->sector->name ?? 'Sem setor',
+            ]);
+        });
+
+        fclose($handle);
+    });
+
+    $response->headers->set('Content-Type', 'text/csv');
+    $response->headers->set('Content-Disposition', 'attachment; filename="usuarios.csv"');
+
+    return $response;
+}
+public function exportPdf()
+{
+    $users = User::all();
+    $pdf = Pdf::loadView('users.pdf', compact('users'));
+
+    return $pdf->download('usuarios.pdf');
 }
 
 }

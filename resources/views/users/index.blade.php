@@ -3,7 +3,9 @@
 
 @section('page-actions')
 @can('create', App\Models\User::class)
-<a href="{{route('users.create')}}" class="btn btn-primary">Adicionar</a>
+<a href="{{route('users.create')}}" class="btn btn-primary">
+<i class="bi bi-plus-lg"></i> Adicionar</a>
+
 @endcan
 @endsection
 
@@ -15,17 +17,15 @@
 </div>
 @endif
 
-
-
 <form action="{{ route('users.index') }}" method="GET" class="mb-3">
     <div class="input-group">
         <input type="text" 
                name="search" 
                class="form-control" 
                placeholder="Pesquisar por nome ou email">
-               <button class="btn btn-primary btn-sm" type="submit">
-    <i class="bi bi-search"></i> Pesquisar
-</button>
+        <button class="btn btn-primary btn-sm" type="submit">
+            <i class="bi bi-search"></i> Pesquisar
+        </button>
     </div>
 </form>
 
@@ -63,7 +63,15 @@
   </tbody>
 </table>
 
-
 {{$users->links()}}
+
+<div class="d-flex justify-content-end mt-3">
+    <a href="{{ route('users.export') }}" class="btn btn-success me-2">
+    Exportar <i class="bi bi-filetype-csv"></i>
+    </a>
+    <a href="{{ route('users.export.pdf') }}" class="btn btn-danger">
+    Exportar <i class="bi bi-file-earmark-pdf"></i>
+    </a>
+</div>
 
 @endsection

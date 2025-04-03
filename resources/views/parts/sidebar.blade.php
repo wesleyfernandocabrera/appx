@@ -29,6 +29,23 @@
               </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-archive"></i>
+                  <p>
+                    Gestão de DMS
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route ('documents.index') }}" class="nav-link">
+                      <i class="nav-icon bi bi-archive"></i>
+                      <p>Documentos</p>
+                   </a>
+                 </li>
+                </ul>
+            </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-pencil-square"></i>
                   <p>
                     Administração
@@ -68,24 +85,17 @@
                     <a href="{{ route ('macros.index') }}" class="nav-link">
                       <i class="nav-icon bi bi-filter-square"></i>
                       <p>Macros</p>
-                    </a>
-                  </li>
-                 
-
-                  </li>
+                   </a>
+                 </li>
                 </ul>
-              </li>
+
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-person"></i>
                   <p>Configurar</p>
                 </a>
-              </li>
-
-            
-            </ul>
-
-            
+              </li>            
+            </ul>            
           </nav>
         </div>
       </aside>

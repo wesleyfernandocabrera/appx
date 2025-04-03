@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Importação correta
 
 class DocumentController extends Controller
 {
+    use AuthorizesRequests; // Necessário para usar authorize()
+
     public function index()
     {
         $documents = Document::with(['macro', 'user', 'sectors', 'companies'])->paginate(10);
@@ -21,16 +24,15 @@ class DocumentController extends Controller
 
     public function create()
     {
-        $macros = Macro::all();
-        $sectors = Sector::all();
-        $companies = Company::all();
-        return view('documents.create', compact('macros', 'sectors', 'companies'));
+        return view('documents.create', [
+            'macros' => Macro::all(),
+            'sectors' => Sector::all(),
+            'companies' => Company::all()
+        ]);
     }
 
     public function store(Request $request)
     {
-        Log::info('Recebendo request para salvar documento', ['request' => $request->all()]);
-
         $validatedData = $request->validate([
             'name'      => 'required|string|max:255',
             'file'      => 'required|file|mimes:pdf,doc,docx|max:2048',
@@ -48,38 +50,26 @@ class DocumentController extends Controller
         DB::beginTransaction();
 
         try {
-            // Salvar o arquivo
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('public/documents', $fileName);
+            $path = $file->storeAs('documents', $fileName, 'public'); // Ajustado para armazenar corretamente
 
-            // Criar documento
             $document = Document::create([
                 'name'      => $validatedData['name'],
-                'file_path' => 'documents/' . $fileName,
+                'file_path' => $path, // Caminho correto do arquivo
                 'macro_id'  => $validatedData['macro_id'],
                 'user_id'   => auth()->id(),
             ]);
 
-            // Relacionar setores e empresas
-            if (!empty($validatedData['sectors'])) {
-                $document->sectors()->attach($validatedData['sectors']);
-            }
-            if (!empty($validatedData['companies'])) {
-                $document->companies()->attach($validatedData['companies']);
-            }
+            $document->sectors()->attach($validatedData['sectors'] ?? []);
+            $document->companies()->attach($validatedData['companies'] ?? []);
 
             DB::commit();
-
             return redirect()->route('documents.index')->with('success', 'Documento enviado com sucesso!');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erro ao salvar documento: ' . $e->getMessage());
-
-            if (isset($path)) {
-                Storage::delete($path);
-            }
-
+            Storage::disk('public')->delete($path ?? '');
             return redirect()->route('documents.create')->with('error', 'Erro ao salvar documento.');
         }
     }
@@ -89,9 +79,23 @@ class DocumentController extends Controller
         $document->locked = !$document->locked;
         $document->save();
 
-        return response()->json([
-            'success' => true,
-            'locked' => $document->locked
-        ]);
+        return response()->json(['success' => true, 'locked' => $document->locked]);
+    }
+
+    public function destroy(Document $document)
+    {
+        $this->authorize('delete', $document);
+
+        try {
+            if ($document->file_path) {
+                Storage::disk('public')->delete($document->file_path);
+            }
+
+            $document->delete();
+            return redirect()->route('documents.index')->with('success', 'Documento excluído com sucesso.');
+        } catch (\Exception $e) {
+            Log::error('Erro ao excluir documento: ' . $e->getMessage());
+            return redirect()->route('documents.index')->with('error', 'Erro ao excluir documento.');
+        }
     }
 }

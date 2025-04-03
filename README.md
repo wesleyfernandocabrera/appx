@@ -49,7 +49,7 @@ Acesse o projeto
 
 
 
-#criar usuario via portal register
+### criar usuario via portal register
 
 #rodar os insert para cria as permissão
 INSERT INTO roles (id, name, created_at, updated_at)  
@@ -64,8 +64,13 @@ VALUES (3, 'editor', NOW(), NOW());
 
 
 
-#rodar os insert para setar a permissão
+### rodar os insert para setar a permissão
 
 INSERT INTO role_user
 (user_id, role_id)
 VALUES(1, 1);
+
+### rodar para criar storage link
+php artisan storage:link
+### verificar storage link
+ls -l storage/app/public/documents/

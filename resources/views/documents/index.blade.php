@@ -48,7 +48,9 @@
       <th scope="col">Macro</th>
       <th scope="col">Setores</th>
       <th scope="col">Empresas</th>
+      <th scope="col">Bloqueio</th> <!-- Mudei para um título genérico -->
       <th scope="col" class="text-end">Ações</th>
+    </tr>
     </tr>
   </thead>
   <tbody>
@@ -56,10 +58,18 @@
     <tr>
       <th scope="row">{{ $document->id }}</th>
       <td>{{ $document->name }}</td>
+      
       <td>{{ $document->status }}</td>
       <td>{{ $document->macro->name }}</td>
       <td>{{ implode(', ', $document->sectors->pluck('name')->toArray()) }}</td>
       <td>{{ implode(', ', $document->companies->pluck('name')->toArray()) }}</td>
+      <td>
+        @if($document->locked)
+          <span class="badge bg-danger">Bloqueado</span>
+        @else
+          <span class="badge bg-success">Desbloqueado</span>
+        @endif
+      </td>
       <td class="text-end">
       <!-- Botão para visualizar -->
       <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-info btn-sm" target="_blank">
@@ -78,21 +88,20 @@
       </a>
 
 
-        @can('edit', $document)
-        <a href="{{ route('documents.edit', $document->id) }}" class="btn btn-primary btn-sm">
+      @can('update', $document)
+      <a href="{{ route('documents.edit', $document->id) }}" class="btn btn-primary btn-sm">
           <i class="bi bi-pencil"></i> Editar
-        </a>
-        @endcan
-
-        @can('destroy', $document)
-        <form action="{{ route('documents.destroy', $document->id) }}" method="POST" style="display: inline;">
+      </a>
+      @endcan
+  
+      @can('delete', $document)
+      <form action="{{ route('documents.destroy', $document->id) }}" method="POST" style="display: inline;">
           @csrf
           @method('DELETE')
-          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este documento?')">
-            <i class="bi bi-trash"></i> Excluir
-          </button>
-        </form>
-        @endcan
+          <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+      </form>
+      @endcan
+  
       </td>
     </tr>
     @endforeach

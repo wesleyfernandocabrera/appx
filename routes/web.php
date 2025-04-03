@@ -39,6 +39,9 @@ use App\Http\Controllers\DocumentController;
     Route::get('/', [DashboardController::class, 'index'])->name('home');
 
     Route::resource('documents', DocumentController::class);
+    Route::resource('documents', DocumentController::class)->except(['edit', 'update']);
     Route::post('/documents/{document}/toggle-lock', [DocumentController::class, 'toggleLock'])->name('documents.toggle-lock');
+    Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+
 
 });

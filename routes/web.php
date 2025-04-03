@@ -6,6 +6,7 @@ use App\Http\Controllers\SectorController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\MacroController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DocumentController;
 
     Route::middleware(['auth'])->group(function(){
     Route::get('/', function () {
@@ -36,6 +37,6 @@ use App\Http\Controllers\DashboardController;
     Route::resource('macros', MacroController::class);
     
     Route::get('/', [DashboardController::class, 'index'])->name('home');
-    
 
+    Route::resource('documents', DocumentController::class);
 });

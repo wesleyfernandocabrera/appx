@@ -48,31 +48,25 @@ class DocumentController extends Controller
         DB::beginTransaction();
 
         try {
-            // Salvar o arquivo na pasta "storage/app/public/documents/"
+            // Salvar o arquivo
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('public/documents', $fileName);
 
-            Log::info('Arquivo salvo com sucesso', ['path' => $path]);
-
-            // Criar documento no banco
+            // Criar documento
             $document = Document::create([
                 'name'      => $validatedData['name'],
-                'file_path' => 'documents/' . $fileName, // Ajuste para salvar corretamente
+                'file_path' => 'documents/' . $fileName,
                 'macro_id'  => $validatedData['macro_id'],
                 'user_id'   => auth()->id(),
             ]);
 
-            Log::info('Documento criado com sucesso', ['document_id' => $document->id]);
-
+            // Relacionar setores e empresas
             if (!empty($validatedData['sectors'])) {
                 $document->sectors()->attach($validatedData['sectors']);
-                Log::info('Setores vinculados', ['sectors' => $validatedData['sectors']]);
             }
-
             if (!empty($validatedData['companies'])) {
                 $document->companies()->attach($validatedData['companies']);
-                Log::info('Empresas vinculadas', ['companies' => $validatedData['companies']]);
             }
 
             DB::commit();
@@ -84,10 +78,20 @@ class DocumentController extends Controller
 
             if (isset($path)) {
                 Storage::delete($path);
-                Log::info('Arquivo removido devido a erro no banco', ['path' => $path]);
             }
 
             return redirect()->route('documents.create')->with('error', 'Erro ao salvar documento.');
         }
+    }
+
+    public function toggleLock(Document $document)
+    {
+        $document->locked = !$document->locked;
+        $document->save();
+
+        return response()->json([
+            'success' => true,
+            'locked' => $document->locked
+        ]);
     }
 }

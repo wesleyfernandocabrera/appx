@@ -23,6 +23,8 @@
 </div>
 @endif
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <!-- Formulário de Pesquisa -->
 <form action="{{ route('documents.index') }}" method="GET" class="mb-3">
     <div class="input-group">
@@ -59,15 +61,22 @@
       <td>{{ implode(', ', $document->sectors->pluck('name')->toArray()) }}</td>
       <td>{{ implode(', ', $document->companies->pluck('name')->toArray()) }}</td>
       <td class="text-end">
-        <!-- Botão para visualizar -->
-        <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-info btn-sm" target="_blank">
-          <i class="bi bi-eye"></i> Visualizar
-        </a>
-        
-        <!-- Botão para baixar -->
-        <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-success btn-sm" download>
-          <i class="bi bi-download"></i> Baixar
-        </a>
+      <!-- Botão para visualizar -->
+      <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-info btn-sm" target="_blank">
+        <i class="bi bi-eye"></i> Visualizar
+      </a>
+
+      <!-- Botão Toggle para bloquear/desbloquear -->
+      <button class="btn btn-sm toggle-lock {{ $document->locked ? 'btn-warning' : 'btn-secondary' }}" data-id="{{ $document->id }}">
+      <i class="bi {{ $document->locked ? 'bi-lock-fill' : 'bi-unlock-fill' }}"></i>
+      {{ $document->locked ? 'Bloqueado' : 'Desbloqueado' }}
+      </button>
+
+      <!-- Botão para baixar -->
+      <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-success btn-sm" download>
+        <i class="bi bi-download"></i> Baixar
+      </a>
+
 
         @can('edit', $document)
         <a href="{{ route('documents.edit', $document->id) }}" class="btn btn-primary btn-sm">

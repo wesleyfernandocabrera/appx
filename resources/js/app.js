@@ -4,7 +4,8 @@ import.meta.glob(['/resources/images/**',
 
 import 'bootstrap/dist/js/bootstrap.esm.min.js';
 import 'admin-lte';
-import './overlaysscrollbars.js'
+import './overlaysscrollbars.js';
+import './toggleLock.js';
 
 
 

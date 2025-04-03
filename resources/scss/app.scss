@@ -1,10 +1,24 @@
 // Importando o arquivo de variáveis
 @import '_variables.scss';
+
 // Importando o icons
 @import 'bootstrap-icons/font/bootstrap-icons.scss';
+
 // Importando o SCSS do AdminLTE
 @import 'admin-lte/dist/css/adminlte.min.css'; 
+
 // Importando o Scrollbars
 @import 'overlayscrollbars/styles/overlayscrollbars.css';
 
+// 🔹 Estilos personalizados para o botão de bloqueio
+.btn-warning {
+    background-color: #ffc107 !important; /* Cor amarela */
+    border-color: #ffc107 !important;
+    color: black !important;
+}
 
+.btn-secondary {
+    background-color: #6c757d !important; /* Cor cinza */
+    border-color: #6c757d !important;
+    color: white !important;
+}

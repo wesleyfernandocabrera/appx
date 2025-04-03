@@ -44,11 +44,12 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Nome</th>
-      <th scope="col">Status</th>
+      
       <th scope="col">Macro</th>
       <th scope="col">Setores</th>
-      <th scope="col">Empresas</th>
-      <th scope="col">Bloqueio</th> <!-- Mudei para um título genérico -->
+      <th scope="col">Usuario Uploud</th>
+      <th scope="col">Status</th> <!-- Mudei para um título genérico -->
+      <th scope="col">Triagem</th>
       <th scope="col" class="text-end">Ações</th>
     </tr>
     </tr>
@@ -58,18 +59,18 @@
     <tr>
       <th scope="row">{{ $document->id }}</th>
       <td>{{ $document->name }}</td>
-      
-      <td>{{ $document->status }}</td>
+          
       <td>{{ $document->macro->name }}</td>
       <td>{{ implode(', ', $document->sectors->pluck('name')->toArray()) }}</td>
-      <td>{{ implode(', ', $document->companies->pluck('name')->toArray()) }}</td>
+      <td>{{ $document->user->name ?? 'Desconhecido' }}</td>
       <td>
         @if($document->locked)
-          <span class="badge bg-danger">Bloqueado</span>
+          <span class="badge bg-danger">Inativo</span>
         @else
-          <span class="badge bg-success">Desbloqueado</span>
+          <span class="badge bg-success">Ativo</span>
         @endif
       </td>
+      <td>{{ $document->status }}</td>
       <td class="text-end">
       <!-- Botão para visualizar -->
       <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-info btn-sm" target="_blank">
@@ -79,7 +80,7 @@
       <!-- Botão Toggle para bloquear/desbloquear -->
       <button class="btn btn-sm toggle-lock {{ $document->locked ? 'btn-warning' : 'btn-secondary' }}" data-id="{{ $document->id }}">
       <i class="bi {{ $document->locked ? 'bi-lock-fill' : 'bi-unlock-fill' }}"></i>
-      {{ $document->locked ? 'Bloqueado' : 'Desbloqueado' }}
+      {{ $document->locked ? 'Ativar' : 'Desativar' }}
       </button>
 
       <!-- Botão para baixar -->
@@ -94,13 +95,13 @@
       </a>
       @endcan
   
-      @can('delete', $document)
+   @can('delete', $document)
       <form action="{{ route('documents.destroy', $document->id) }}" method="POST" style="display: inline;">
           @csrf
           @method('DELETE')
           <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
       </form>
-      @endcan
+  @endcan
   
       </td>
     </tr>

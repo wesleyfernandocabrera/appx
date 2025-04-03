@@ -10,11 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Importação correta
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class DocumentController extends Controller
 {
-    use AuthorizesRequests; // Necessário para usar authorize()
+    use AuthorizesRequests;
 
     public function index()
     {
@@ -34,31 +34,28 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name'      => 'required|string|max:255',
-            'file'      => 'required|file|mimes:pdf,doc,docx|max:2048',
-            'macro_id'  => 'required|exists:macros,id',
-            'sectors'   => 'nullable|array',
+            'name' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'macro_id' => 'required|exists:macros,id',
+            'sectors' => 'nullable|array',
             'sectors.*' => 'exists:sectors,id',
             'companies' => 'nullable|array',
             'companies.*' => 'exists:companies,id',
         ]);
-
-        if (!auth()->check()) {
-            return redirect()->route('documents.create')->with('error', 'Usuário não autenticado.');
-        }
 
         DB::beginTransaction();
 
         try {
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('documents', $fileName, 'public'); // Ajustado para armazenar corretamente
+            $path = $file->storeAs('documents', $fileName, 'public');
 
             $document = Document::create([
-                'name'      => $validatedData['name'],
-                'file_path' => $path, // Caminho correto do arquivo
-                'macro_id'  => $validatedData['macro_id'],
-                'user_id'   => auth()->id(),
+                'name' => $validatedData['name'],
+                'file_path' => $path,
+                'macro_id' => $validatedData['macro_id'],
+                'user_id' => auth()->id(),
+                'locked' => false
             ]);
 
             $document->sectors()->attach($validatedData['sectors'] ?? []);
@@ -74,12 +71,55 @@ class DocumentController extends Controller
         }
     }
 
-    public function toggleLock(Document $document)
+    public function edit(Document $document)
     {
-        $document->locked = !$document->locked;
-        $document->save();
+        return view('documents.edit', [
+            'document' => $document,
+            'macros' => Macro::all(),
+            'sectors' => Sector::all(),
+            'companies' => Company::all()
+        ]);
+    }
 
-        return response()->json(['success' => true, 'locked' => $document->locked]);
+    public function update(Request $request, Document $document)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'macro_id' => 'required|exists:macros,id',
+            'sectors' => 'nullable|array',
+            'sectors.*' => 'exists:sectors,id',
+            'companies' => 'nullable|array',
+            'companies.*' => 'exists:companies,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $document->name = $validatedData['name'];
+            $document->macro_id = $validatedData['macro_id'];
+
+            if ($request->hasFile('file')) {
+                if ($document->file_path) {
+                    Storage::disk('public')->delete($document->file_path);
+                }
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('documents', $fileName, 'public');
+                $document->file_path = $path;
+            }
+
+            $document->save();
+            $document->sectors()->sync($validatedData['sectors'] ?? []);
+            $document->companies()->sync($validatedData['companies'] ?? []);
+
+            DB::commit();
+            return redirect()->route('documents.index')->with('success', 'Documento atualizado com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao atualizar documento: ' . $e->getMessage());
+            return redirect()->route('documents.edit', $document->id)->with('error', 'Erro ao atualizar documento.');
+        }
     }
 
     public function destroy(Document $document)
@@ -96,6 +136,25 @@ class DocumentController extends Controller
         } catch (\Exception $e) {
             Log::error('Erro ao excluir documento: ' . $e->getMessage());
             return redirect()->route('documents.index')->with('error', 'Erro ao excluir documento.');
+        }
+    }
+
+    public function toggleLock(Document $document)
+    {
+        try {
+            $this->authorize('update', $document);
+
+            $document->locked = !$document->locked;
+            $document->save();
+
+            return response()->json([
+                'success' => true,
+                'locked' => $document->locked,
+                'status' => $document->locked ? 'Inativo' : 'Ativo' // Retorna o status atualizado
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erro ao alternar bloqueio: ' . $e->getMessage());
+            return response()->json(['success' => false], 500);
         }
     }
 }

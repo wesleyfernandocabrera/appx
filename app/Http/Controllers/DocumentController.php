@@ -124,20 +124,19 @@ class DocumentController extends Controller
 
     public function destroy(Document $document)
     {
-        $this->authorize('delete', $document);
+    $this->authorize('delete', $document);
 
-        try {
-            if ($document->file_path) {
-                Storage::disk('public')->delete($document->file_path);
-            }
+    try {
+        // NÃO apaga o arquivo do disco aqui se quiser manter
+        $document->delete();
 
-            $document->delete();
-            return redirect()->route('documents.index')->with('success', 'Documento excluído com sucesso.');
-        } catch (\Exception $e) {
-            Log::error('Erro ao excluir documento: ' . $e->getMessage());
-            return redirect()->route('documents.index')->with('error', 'Erro ao excluir documento.');
-        }
+        return redirect()->route('documents.index')->with('success', 'Documento movido para a lixeira.');
+    } catch (\Exception $e) {
+        Log::error('Erro ao mover documento para a lixeira: ' . $e->getMessage());
+        return redirect()->route('documents.index')->with('error', 'Erro ao mover documento.');
     }
+    }
+
 
     public function toggleLock(Document $document)
     {
@@ -157,4 +156,18 @@ class DocumentController extends Controller
             return response()->json(['success' => false], 500);
         }
     }
+    public function trash()
+{
+    $documents = Document::onlyTrashed()->with(['macro', 'user', 'sectors', 'companies'])->paginate(10);
+    return view('documents.trash', compact('documents'));
+}
+
+public function restore($id)
+{
+    $document = Document::onlyTrashed()->findOrFail($id);
+    $document->restore();
+
+    return redirect()->route('documents.trash')->with('success', 'Documento restaurado com sucesso!');
+}
+
 }

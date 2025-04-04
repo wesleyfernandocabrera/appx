@@ -32,5 +32,6 @@
       </div>
       <!--adicionar app.js-->
       @vite('resources/js/app.js')
+      
   </body>
 </html>

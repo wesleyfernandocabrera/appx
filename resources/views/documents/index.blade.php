@@ -44,11 +44,10 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Nome</th>
-      
       <th scope="col">Macro</th>
       <th scope="col">Setores</th>
-      <th scope="col">Usuario Uploud</th>
-      <th scope="col">Status</th> <!-- Mudei para um título genérico -->
+      <th scope="col">Responsável Uploud</th>
+      <th scope="col">Status</th> 
       <th scope="col">Triagem</th>
       <th scope="col" class="text-end">Ações</th>
     </tr>
@@ -61,7 +60,15 @@
       <td>{{ $document->name }}</td>
           
       <td>{{ $document->macro->name }}</td>
-      <td>{{ implode(', ', $document->sectors->pluck('name')->toArray()) }}</td>
+      <td>
+          <span 
+            class="badge bg-secondary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="{{ implode(', ', $document->sectors->pluck('name')->toArray()) }}">
+            {{ $document->sectors->count() }} Setor(es)
+          </span>
+      </td>
       <td>{{ $document->user->name ?? 'Desconhecido' }}</td>
       <td>
         @if($document->locked)
@@ -78,10 +85,12 @@
       </a>
 
       <!-- Botão Toggle para bloquear/desbloquear -->
+      @can('create', App\Models\User::class)
       <button class="btn btn-sm toggle-lock {{ $document->locked ? 'btn-warning' : 'btn-secondary' }}" data-id="{{ $document->id }}">
       <i class="bi {{ $document->locked ? 'bi-lock-fill' : 'bi-unlock-fill' }}"></i>
       {{ $document->locked ? 'Ativar' : 'Desativar' }}
       </button>
+      @endcan
 
       <!-- Botão para baixar -->
       <a href="{{ asset('storage/' . $document->file_path) }}" class="btn btn-success btn-sm" download>

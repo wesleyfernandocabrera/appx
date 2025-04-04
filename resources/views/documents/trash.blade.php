@@ -105,6 +105,7 @@
         </a>
     
         <!-- Botão Restaurar (se for lixeira) -->
+        @can('create', App\Models\User::class)
         @if(request()->is('documents/trash'))
         <form action="{{ route('documents.restore', $document->id) }}" method="POST" style="display:inline-block;">
             @csrf
@@ -113,6 +114,7 @@
             </button>
         </form>
         @endif
+        @endcan
     
         <!-- Botão Excluir Permanente -->
         @can('delete', $document)

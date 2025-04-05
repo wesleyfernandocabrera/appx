@@ -2,11 +2,9 @@
 @section('page-title', 'Documentos') 
 
 @section('page-actions')
-@can('create', App\Models\User::class)
 <a href="{{ route('documents.create') }}" class="btn btn-primary">
-    <i class="bi bi-plus-lg"></i> Adicionar Documento
+    <i class="bi bi-plus-lg"></i> Ir para Documentos
 </a>
-@endcan
 @endsection
 
 @section('content')
@@ -84,18 +82,7 @@
            style="display: inline-block;">
             <i class="bi bi-eye"></i> Visualizar
         </a>
-    
-        <!-- Botão Toggle Ativar/Inativar -->
-        @can('create', App\Models\User::class)
-        <form action="{{ route('documents.toggle-lock', $document->id) }}" method="POST" style="display:inline-block;">
-            @csrf
-            <button type="submit" class="btn btn-sm {{ $document->locked ? 'btn-warning' : 'btn-secondary' }} mb-1">
-                <i class="bi {{ $document->locked ? 'bi-lock-fill' : 'bi-unlock-fill' }}"></i>
-                {{ $document->locked ? 'Ativar' : 'Desativar' }}
-            </button>
-        </form>
-        @endcan
-    
+     
         <!-- Botão Baixar -->
         <a href="{{ asset('storage/' . $document->file_path) }}" 
            class="btn btn-success btn-sm mb-1" 
